@@ -25,25 +25,44 @@ function processSubmission(submission) {
 }
 function startWorker() {
     return __awaiter(this, void 0, void 0, function* () {
+        // try {
+        //     await client.connect();
+        //     console.log("Worker connected to Redis.");
+        //     // Main loop
+        //     while (true) {
+        //         try {
+        //             const submission = await client.brPop("problems", 0);
+        //             // @ts-ignore
+        //             await processSubmission(submission.element);
+        //         } catch (error) {
+        //             console.error("Error processing submission:", error);
+        //             // Implement your error handling logic here. For example, you might want to push
+        //             // the submission back onto the queue or log the error to a file.
+        //         }
+        //     }
+        // } catch (error) {
+        //     console.error("Failed to connect to Redis", error);
+        // }
         try {
             yield client.connect();
-            console.log("Worker connected to Redis.");
-            // Main loop
+            console.log("worker connected to redis");
+            // main loop 
             while (true) {
                 try {
-                    const submission = yield client.brPop("problems", 0);
-                    // @ts-ignore
-                    yield processSubmission(submission.element);
+                    const submission = yield client.brPop("submissions", 0);
+                    console.log(submission);
+                    yield new Promise((resolve) => setTimeout(resolve, 1000));
+                    console.log("processed users submissions");
                 }
-                catch (error) {
-                    console.error("Error processing submission:", error);
+                catch (e) {
+                    console.error("Error processing submission:", e);
                     // Implement your error handling logic here. For example, you might want to push
                     // the submission back onto the queue or log the error to a file.
                 }
             }
         }
-        catch (error) {
-            console.error("Failed to connect to Redis", error);
+        catch (e) {
+            console.error("Failed to connect to Redis", e);
         }
     });
 }

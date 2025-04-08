@@ -16,24 +16,49 @@ async function processSubmission(submission: string) {
 
 async function startWorker() {
 
+    // try {
+    //     await client.connect();
+    //     console.log("Worker connected to Redis.");
+
+    //     // Main loop
+    //     while (true) {
+    //         try {
+    //             const submission = await client.brPop("problems", 0);
+    //             // @ts-ignore
+    //             await processSubmission(submission.element);
+    //         } catch (error) {
+    //             console.error("Error processing submission:", error);
+    //             // Implement your error handling logic here. For example, you might want to push
+    //             // the submission back onto the queue or log the error to a file.
+    //         }
+    //     }
+    // } catch (error) {
+    //     console.error("Failed to connect to Redis", error);
+    // }
+
     try {
         await client.connect();
-        console.log("Worker connected to Redis.");
-
-        // Main loop
+        console.log("worker connected to redis");
+        
+        // main loop 
         while (true) {
             try {
-                const submission = await client.brPop("problems", 0);
-                // @ts-ignore
-                await processSubmission(submission.element);
-            } catch (error) {
-                console.error("Error processing submission:", error);
+
+                const submission = await client.brPop("submissions", 0)
+                console.log(submission);
+                
+                await new Promise((resolve) => setTimeout(resolve, 1000))
+                console.log("processed users submissions");
+                
+            } catch(e) {
+                console.error("Error processing submission:", e);
                 // Implement your error handling logic here. For example, you might want to push
                 // the submission back onto the queue or log the error to a file.
             }
         }
-    } catch (error) {
-        console.error("Failed to connect to Redis", error);
+
+    } catch(e) {
+        console.error("Failed to connect to Redis", e);
     }
 }
 

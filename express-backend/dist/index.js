@@ -17,6 +17,25 @@ const redis_1 = require("redis");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 const client = (0, redis_1.createClient)();
+app.post("/submit", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { problemId, userId, code, language } = req.body;
+    try {
+        yield client.lPush("submissions", JSON.stringify({
+            problemId,
+            userId,
+            code,
+            language
+        }));
+        // store in db
+        res.status(200).json({
+            message: "submission received!"
+        });
+    }
+    catch (e) {
+        console.error("redis error", e);
+        res.status(500).send("Failed to store submission");
+    }
+}));
 function startServer() {
     return __awaiter(this, void 0, void 0, function* () {
         try {

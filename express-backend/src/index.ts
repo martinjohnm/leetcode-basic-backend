@@ -8,6 +8,25 @@ const app = express()
 app.use(express.json())
 const client = createClient()
 
+app.post("/submit", async (req, res) => {
+    const {problemId, userId, code, language} = req.body;
+    try {
+        await client.lPush("submissions", JSON.stringify({
+            problemId,
+            userId, 
+            code, 
+            language
+        }))
+        // store in db
+        res.status(200).json({
+            message : "submission received!"
+        })
+    } catch(e) {
+        console.error("redis error", e);
+        res.status(500).send("Failed to store submission")
+    }
+   
+})
 
 async function startServer() {
     try {
